@@ -6,7 +6,8 @@ import {
     Marker,
     Popup,
     withLeaflet,
-    Polyline
+    Polyline,
+    CircleMarker
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
@@ -80,7 +81,7 @@ const listLocationUser = [
     {
         lat: 16.0742517,
         lng: 108.2186261
-    },
+    }
 ];
 
 const useGeoLocation = () => {
@@ -156,13 +157,13 @@ const Leaflet = () => {
         if (latitude && longitude && !error) {
             // Fetch weather data here.
             console.log('latitude', latitude);
-            console.log('longitude', longitude);    
+            console.log('longitude', longitude);
             console.log('count', count);
 
             let newListMoving = [];
 
             let indexLocation = count / 10000;
-            console.log('indexLocation',indexLocation);
+            console.log('indexLocation', indexLocation);
             if (count === 0) {
                 newListMoving.push(listLocationUser[count]);
             } else if (indexLocation === listLocationUser.length) {
@@ -263,22 +264,17 @@ const Leaflet = () => {
                     locationMoving.map(
                         (loca, index) =>
                             JSON.stringify(loca) !== JSON.stringify(center) && (
-                                <Marker
+                                <CircleMarker
                                     key={index}
-                                    position={loca}
-                                    icon={IconMarkerPin}>
+                                    center={loca}
+                                    fill={true}
+                                    color="#220bb9"
+                                    radius={3}>
                                     <Popup>
-                                        You are here.
-                                        <input
-                                            type="file"
-                                            id="myfile"
-                                            name="myfile"
-                                            onChange={e =>
-                                                console.log(e.target.value)
-                                            }
-                                        />
+                                        <b>lat:</b> {loca.lat} <br />
+                                        <b>lng:</b> {loca.lng} <br />
                                     </Popup>
-                                </Marker>
+                                </CircleMarker>
                             )
                     )}
                 <TileLayer
