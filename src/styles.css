@@ -1,0 +1,25 @@
+body {
+    margin: 0px;
+}
+
+.sr-only {
+    display: none;
+}
+
+.leaflet-container {
+    width: 100vw;
+}
+.row-info{
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.button-get-location {
+    height: 36px;
+    width: max-content;
+    float: right;
+    background-color: rgb(0, 89, 255);
+    color: aliceblue;
+    border: none;
+    cursor: pointer;
+}
