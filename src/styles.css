@@ -22,4 +22,11 @@ body {
     color: aliceblue;
     border: none;
     cursor: pointer;
+    margin-left: 10px;
+}
+.button-moving {
+    background-color: red;
+}
+.button-unmove {
+    background-color: black;
 }

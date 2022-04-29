@@ -5,17 +5,83 @@ import {
     FeatureGroup,
     Marker,
     Popup,
-    withLeaflet
+    withLeaflet,
+    Polyline
 } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import { EditControl } from 'react-leaflet-draw';
 import 'leaflet-draw';
 import PrintControlDefault from 'react-leaflet-easyprint';
+import { usePosition } from 'use-position';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 
 const PrintControl = withLeaflet(PrintControlDefault);
+
+const listLocationUser = [
+    {
+        lat: 16.0742517,
+        lng: 108.2186261
+    },
+    {
+        lat: 16.07414,
+        lng: 108.217333
+    },
+    {
+        lat: 16.074088,
+        lng: 108.216818
+    },
+    {
+        lat: 16.073934,
+        lng: 108.216174
+    },
+
+    {
+        lat: 16.073851,
+        lng: 108.21525
+    },
+    {
+        lat: 16.073665,
+        lng: 108.214813
+    },
+    {
+        lat: 16.073542,
+        lng: 108.21393
+    },
+    {
+        lat: 16.072284,
+        lng: 108.213139
+    },
+    {
+        lat: 16.071665,
+        lng: 108.213246
+    },
+    {
+        lat: 16.07216,
+        lng: 108.216842
+    },
+    {
+        lat: 16.072428,
+        lng: 108.218439
+    },
+    {
+        lat: 16.072773,
+        lng: 108.220883
+    },
+    {
+        lat: 16.072773,
+        lng: 108.220883
+    },
+    {
+        lat: 16.074835,
+        lng: 108.220603
+    },
+    {
+        lat: 16.0742517,
+        lng: 108.2186261
+    },
+];
 
 const useGeoLocation = () => {
     const [location, setLocation] = useState({
@@ -57,15 +123,58 @@ const useGeoLocation = () => {
     return location;
 };
 
-const Leaflet = () => {
-    const [center, setCenter] = useState({ lat: 51.51, lng: -0.06 });
-    const [mapLayers, setMapLayers] = useState([]);
+const ZOOM_LEVEL = 15;
 
+const Leaflet = () => {
     const userLocation = useGeoLocation();
 
-    const ZOOM_LEVEL = 15;
+    const [center, setCenter] = useState({ lat: 51.51, lng: -0.06 });
+    const [mapLayers, setMapLayers] = useState([]);
+    const [count, setCount] = useState(0);
+    const [inprogress, setInprogress] = useState(false);
+    const [locationMoving, setLocationMoving] = useState([]);
+
     const mapRef = useRef();
     const printControl = useRef();
+    let onTimeout = useRef();
+
+    const { latitude, longitude, error } = usePosition();
+
+    useEffect(() => {
+        if (typeof count === 'number' && inprogress) {
+            onTimeout.current = setTimeout(() => {
+                setCount(c => c + 10000);
+            }, 1000);
+        }
+
+        return () => {
+            clearTimeout(onTimeout.current);
+        };
+    });
+
+    useEffect(() => {
+        if (latitude && longitude && !error) {
+            // Fetch weather data here.
+            console.log('latitude', latitude);
+            console.log('longitude', longitude);    
+            console.log('count', count);
+
+            let newListMoving = [];
+
+            let indexLocation = count / 10000;
+            console.log('indexLocation',indexLocation);
+            if (count === 0) {
+                newListMoving.push(listLocationUser[count]);
+            } else if (indexLocation === listLocationUser.length) {
+                return clearTimeout(onTimeout.current);
+            } else {
+                newListMoving.push(listLocationUser[indexLocation]);
+            }
+
+            setLocationMoving([...newListMoving, ...locationMoving]);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [count, inprogress]);
 
     useEffect(() => {
         if (userLocation.loaded && userLocation.error) return;
@@ -132,6 +241,12 @@ const Leaflet = () => {
             alert(userLocation.error.message);
         }
     };
+
+    const handleStopMoving = () => {
+        alert('Stop moving!');
+        clearTimeout(onTimeout.current);
+    };
+
     return (
         <div>
             <Map
@@ -143,6 +258,35 @@ const Leaflet = () => {
                     <Popup>You are here.</Popup>
                 </Marker>
 
+                {locationMoving &&
+                    locationMoving.length > 0 &&
+                    locationMoving.map(
+                        (loca, index) =>
+                            JSON.stringify(loca) !== JSON.stringify(center) && (
+                                <Marker
+                                    key={index}
+                                    position={loca}
+                                    icon={IconMarkerPin}>
+                                    <Popup>
+                                        You are here.
+                                        <input
+                                            type="file"
+                                            id="myfile"
+                                            name="myfile"
+                                            onChange={e =>
+                                                console.log(e.target.value)
+                                            }
+                                        />
+                                    </Popup>
+                                </Marker>
+                            )
+                    )}
+                <TileLayer
+                    url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                    maxZoom={20}
+                    subdomains={['mt1', 'mt2', 'mt3']}
+                />
+                <Polyline color="#220bb9" positions={locationMoving} />
                 {mapLayers &&
                     mapLayers.length > 0 &&
                     mapLayers.map(layer =>
@@ -165,10 +309,6 @@ const Leaflet = () => {
                             </Marker>
                         ))
                     )}
-                <TileLayer
-                    attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-                    url="http://{s}.tile.osm.org/{z}/{x}/{y}.png"
-                />
                 <PrintControl
                     ref={printControl}
                     position="topleft"
@@ -202,12 +342,29 @@ const Leaflet = () => {
                 <pre className="text-left">
                     {JSON.stringify(mapLayers, 0, 2)}
                 </pre>
-                <button
-                    type="submit"
-                    className="button-get-location"
-                    onClick={showMyLocation}>
-                    Get my location
-                </button>
+                <div>
+                    <button
+                        type="submit"
+                        className="button-get-location button-unmove"
+                        onClick={handleStopMoving}>
+                        Stop moving
+                    </button>
+                    <button
+                        type="submit"
+                        className="button-get-location button-moving"
+                        onClick={() => {
+                            alert('Start moving!');
+                            setInprogress(true);
+                        }}>
+                        Start moving
+                    </button>
+                    <button
+                        type="submit"
+                        className="button-get-location"
+                        onClick={showMyLocation}>
+                        Get my location
+                    </button>
+                </div>
             </div>
         </div>
     );
