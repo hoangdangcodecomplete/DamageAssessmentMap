@@ -1,6 +1,5 @@
 import React from 'react';
 import './styles.css';
-import Leaflet from './Map';
+import DamageAssessment from './Map';
 
-
-export default () => <Leaflet />;
+export default () => <DamageAssessment />;
