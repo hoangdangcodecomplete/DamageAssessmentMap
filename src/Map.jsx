@@ -1,25 +1,28 @@
-import React, { useState, useRef, useEffect } from 'react';
+import moment from 'moment';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    Map,
-    TileLayer,
+    CircleMarker,
     FeatureGroup,
+    Map,
     Marker,
-    Popup,
-    withLeaflet,
     Polyline,
-    CircleMarker
+    Popup,
+    TileLayer,
+    withLeaflet
 } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import 'leaflet-draw/dist/leaflet.draw.css';
-import { EditControl } from 'react-leaflet-draw';
 import 'leaflet-draw';
+import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet/dist/leaflet.css';
+import { EditControl } from 'react-leaflet-draw';
 import PrintControlDefault from 'react-leaflet-easyprint';
 import { usePosition } from 'use-position';
+import ButtonControl from './components/button-control';
+import ModalChooseAction from './components/modal-choose-option';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
-import ButtonControl from './components/button-control';
 import useGeoLocation from './hooks/geo-location';
 import { listLocationUser } from './resources/data/list-positions.js';
+import { convertTime } from './helpers/convert-time';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -34,16 +37,32 @@ const DamageAssessment = () => {
     const [count, setCount] = useState(0);
     const [inprogress, setInprogress] = useState(false);
     const [locationMoving, setLocationMoving] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [styleDraw, setStyleDraw] = useState({
+        color: '#ff0000',
+        time: moment('00:10', 'mm:ss')
+    });
+
+    const showModal = () => {
+        setIsModalVisible(true);
+    };
+
+    const handleCancel = () => {
+        setIsModalVisible(false);
+    };
 
     const mapRef = useRef();
     const printControl = useRef();
     let onTimeout = useRef();
 
     useEffect(() => {
+        const timeCheck =
+            convertTime(moment(styleDraw.time).format('mm:ss')) * 1000;
+        console.log('timeCheck', timeCheck);
         if (typeof count === 'number' && inprogress) {
             onTimeout.current = setTimeout(() => {
                 setCount(c => c + 10000);
-            }, 1000);
+            }, timeCheck);
         }
 
         return () => {
@@ -147,8 +166,9 @@ const DamageAssessment = () => {
         clearTimeout(onTimeout.current);
     };
 
-    const handleStartMoving = () => {
-        alert('Start moving!');
+    const handleChangeStyle = values => {
+        setStyleDraw(values);
+        setIsModalVisible(false);
         setInprogress(true);
     };
 
@@ -162,7 +182,12 @@ const DamageAssessment = () => {
                 <Marker position={center} icon={icon}>
                     <Popup>You are here.</Popup>
                 </Marker>
-
+                <TileLayer
+                    url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
+                    maxZoom={20}
+                    subdomains={['mt1', 'mt2', 'mt3']}
+                />
+                <Polyline color={styleDraw.color} positions={locationMoving} />
                 {locationMoving &&
                     locationMoving.length > 0 &&
                     locationMoving.map(
@@ -172,7 +197,7 @@ const DamageAssessment = () => {
                                     key={index}
                                     center={loca}
                                     fill={true}
-                                    color="#220bb9"
+                                    color={styleDraw.color}
                                     radius={3}>
                                     <Popup>
                                         <b>lat:</b> {loca?.lat} <br />
@@ -181,12 +206,7 @@ const DamageAssessment = () => {
                                 </CircleMarker>
                             )
                     )}
-                <TileLayer
-                    url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
-                    maxZoom={20}
-                    subdomains={['mt1', 'mt2', 'mt3']}
-                />
-                <Polyline color="#220bb9" positions={locationMoving} />
+
                 {mapLayers &&
                     mapLayers.length > 0 &&
                     mapLayers.map(layer =>
@@ -231,9 +251,9 @@ const DamageAssessment = () => {
                         draw={{
                             rectangle: true,
                             polyline: true,
-                            circle: true,
-                            circlemarker: true,
-                            marker: true
+                            circle: false,
+                            circlemarker: false,
+                            marker: false
                         }}
                     />
                 </FeatureGroup>
@@ -241,8 +261,15 @@ const DamageAssessment = () => {
             <ButtonControl
                 mapLayers={mapLayers}
                 onStopMoving={handleStopMoving}
-                onStartMoving={handleStartMoving}
+                onStartMoving={showModal}
                 onShow={showMyLocation}
+            />
+
+            <ModalChooseAction
+                isModalVisible={isModalVisible}
+                onCancel={handleCancel}
+                iniStyle={styleDraw}
+                onChangeStyle={handleChangeStyle}
             />
         </div>
     );
