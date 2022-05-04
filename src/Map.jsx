@@ -79,18 +79,23 @@ const DamageAssessment = () => {
             if (!inprogress) return;
             let newListMoving = [];
 
-            let indexLocation = count / 10000;
-            console.log('indexLocation', indexLocation);
-            if (count === 0) {
-                newListMoving.push(listLocationUser[count]);
-            } else if (indexLocation >= listLocationUser.length) {
-                setInprogress(false);
-                return clearTimeout(onTimeout.current);
-            } else {
-                newListMoving.push(listLocationUser[indexLocation]);
-            }
+            let newLocation = {
+                lat: latitude,
+                lng: longitude
+            };
 
-            setLocationMoving([...newListMoving, ...locationMoving]);
+            // let indexLocation = count / 10000;
+            // console.log('indexLocation', indexLocation);
+            // if (count === 0) {
+            //     newListMoving.push(listLocationUser[count]);
+            // } else if (indexLocation >= listLocationUser.length) {
+            //     setInprogress(false);
+            //     return clearTimeout(onTimeout.current);
+            // } else {
+            //     newListMoving.push(listLocationUser[indexLocation]);
+            // }
+
+            setLocationMoving([newLocation, ...locationMoving]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [count, inprogress]);
