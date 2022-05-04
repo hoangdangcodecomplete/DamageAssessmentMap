@@ -40,7 +40,8 @@ const DamageAssessment = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [styleDraw, setStyleDraw] = useState({
         color: '#ff0000',
-        time: moment('00:10', 'mm:ss')
+        time: moment('00:10', 'mm:ss'),
+        action: false
     });
 
     const showModal = () => {
@@ -59,7 +60,7 @@ const DamageAssessment = () => {
         const timeCheck =
             convertTime(moment(styleDraw.time).format('mm:ss')) * 1000;
         console.log('timeCheck', timeCheck);
-        if (typeof count === 'number' && inprogress) {
+        if (typeof count === 'number' && inprogress && !styleDraw.action) {
             onTimeout.current = setTimeout(() => {
                 setCount(c => c + 10000);
             }, timeCheck);
@@ -177,6 +178,8 @@ const DamageAssessment = () => {
         setInprogress(true);
     };
 
+    console.log('locationMoving', locationMoving);
+
     return (
         <div>
             <Map
@@ -268,6 +271,7 @@ const DamageAssessment = () => {
                 onStopMoving={handleStopMoving}
                 onStartMoving={showModal}
                 onShow={showMyLocation}
+                isTouchCheck={styleDraw.action}
             />
 
             <ModalChooseAction

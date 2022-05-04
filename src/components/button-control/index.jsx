@@ -1,7 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ButtonControl = ({ mapLayers, onStopMoving, onStartMoving, onShow }) => {
+const ButtonControl = ({
+    mapLayers,
+    onStopMoving,
+    onStartMoving,
+    isTouchCheck,
+    onShow
+}) => {
     return (
         <div className="row-info">
             <pre className="text-left">{JSON.stringify(mapLayers, 0, 2)}</pre>
@@ -18,6 +24,14 @@ const ButtonControl = ({ mapLayers, onStopMoving, onStartMoving, onShow }) => {
                     onClick={onStartMoving}>
                     Start moving
                 </button>
+                {isTouchCheck && (
+                    <button
+                        type="submit"
+                        className="button-get-location button-moving"
+                        onClick={onStartMoving}>
+                        Check
+                    </button>
+                )}
                 <button
                     type="submit"
                     className="button-get-location"
@@ -33,7 +47,8 @@ ButtonControl.propTypes = {
     mapLayers: PropTypes.array,
     onStopMoving: PropTypes.func,
     onStartMoving: PropTypes.func,
-    onShow: PropTypes.func
+    onShow: PropTypes.func,
+    isTouchCheck: PropTypes.bool
 };
 
 export default ButtonControl;

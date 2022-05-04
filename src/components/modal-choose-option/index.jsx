@@ -1,6 +1,6 @@
 import { Button, Form, Modal, Radio, Space, TimePicker } from 'antd';
 import PropTypes from 'prop-types';
-import React from 'react';
+import React, { useState } from 'react';
 
 const ModalChooseAction = ({
     isModalVisible,
@@ -8,8 +8,14 @@ const ModalChooseAction = ({
     onCancel,
     onChangeStyle
 }) => {
+    const [isTouch, setIsTouch] = useState(false);
+
     const onFinish = values => {
         onChangeStyle(values);
+    };
+
+    const onChangeOptionCheckPoint = e => {
+        setIsTouch(e.target.value);
     };
 
     return (
@@ -35,9 +41,18 @@ const ModalChooseAction = ({
                         </Radio.Group>
                     </Form.Item>
 
-                    <Form.Item label="Time check" name="time">
-                        <TimePicker showNow={false} format="mm:ss" />
+                    <Form.Item label="Action" name="action">
+                        <Radio.Group onChange={onChangeOptionCheckPoint}>
+                            <Radio value={true}>Touch</Radio>
+                            <Radio value={false}>Set time</Radio>
+                        </Radio.Group>
                     </Form.Item>
+
+                    {!isTouch && (
+                        <Form.Item label="Time check" name="time">
+                            <TimePicker showNow={false} format="mm:ss" />
+                        </Form.Item>
+                    )}
 
                     <Form.Item
                         wrapperCol={{
