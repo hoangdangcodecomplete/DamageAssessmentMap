@@ -8,10 +8,12 @@
     ],
     "main": "src/index.jsx",
     "dependencies": {
+        "@ant-design/icons": "^4.7.0",
         "antd": "^4.20.2",
         "gh-pages": "^3.2.3",
         "leaflet": "1.6.0",
         "leaflet-draw": "1.0.4",
+        "lodash": "^4.17.21",
         "moment": "^2.29.3",
         "react": "16.12.0",
         "react-dom": "16.12.0",
@@ -20,6 +22,8 @@
         "react-leaflet-drift-marker": "^3.0.0",
         "react-leaflet-easyprint": "^2.0.0",
         "react-scripts": "^3.4.1",
+        "sass": "^1.51.0",
+        "style-loader": "^3.3.1",
         "use-position": "^1.0.0",
         "yarn": "^1.22.18"
     },

@@ -1,3 +1,7 @@
+span {
+    font-size: clamp(10px, 1vw, 10vh)
+}
+
 body {
     margin: 0px;
 }
@@ -9,11 +13,13 @@ body {
 .leaflet-container {
     width: 100vw;
 }
-.row-info{
+
+.row-info {
     display: flex;
     width: 100%;
     justify-content: space-between;
 }
+
 .button-get-location {
     height: 36px;
     width: max-content;
@@ -24,9 +30,24 @@ body {
     cursor: pointer;
     margin-left: 10px;
 }
+
 .button-moving {
     background-color: red;
 }
+
 .button-unmove {
     background-color: black;
+}
+
+.fomat-collapsed .ant-collapse-content-box {
+    padding: unset;
+}
+
+.fomat-collapsed .ant-list-item {
+    cursor: pointer;
+    display: flow-root;
+}
+
+.col-choose-color-draw {
+    display: inline-grid;
 }

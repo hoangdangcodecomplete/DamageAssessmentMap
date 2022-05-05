@@ -1,50 +1,51 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button, Col, Row } from 'antd';
 
 const ButtonControl = ({
-    mapLayers,
     onStopMoving,
     onStartMoving,
     isTouchCheck,
     onShow
 }) => {
     return (
-        <div className="row-info">
-            <pre className="text-left">{JSON.stringify(mapLayers, 0, 2)}</pre>
-            <div>
-                <button
-                    type="submit"
-                    className="button-get-location button-unmove"
-                    onClick={onStopMoving}>
-                    Stop moving
-                </button>
-                <button
-                    type="submit"
-                    className="button-get-location button-moving"
-                    onClick={onStartMoving}>
-                    Start moving
-                </button>
-                {isTouchCheck && (
-                    <button
-                        type="submit"
-                        className="button-get-location button-moving"
+        <Row gutter={[8, 8]}>
+            {isTouchCheck && (
+                <Col>
+                    <Button
+                        type="primary"
+                        shape="round"
                         onClick={onStartMoving}>
                         Check
-                    </button>
-                )}
-                <button
-                    type="submit"
-                    className="button-get-location"
-                    onClick={onShow}>
+                    </Button>
+                </Col>
+            )}
+            <Col>
+                <Button type="primary" shape="round" onClick={onStartMoving}>
+                    Start moving
+                </Button>
+            </Col>
+            <Col>
+                <Button
+                    type="primary"
+                    shape="round"
+                    danger
+                    onClick={onStopMoving}>
+                    Stop moving
+                </Button>
+            </Col>
+            <Col>
+                <Button shape="round" onClick={onShow}>
                     Get my location
-                </button>
-            </div>
-        </div>
+                </Button>
+            </Col>
+        </Row>
+        //     </Col>
+        // </>
     );
 };
 
 ButtonControl.propTypes = {
-    mapLayers: PropTypes.array,
     onStopMoving: PropTypes.func,
     onStartMoving: PropTypes.func,
     onShow: PropTypes.func,

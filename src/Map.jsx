@@ -1,5 +1,6 @@
 import moment from 'moment';
-import React, { useEffect, useRef, useState } from 'react';
+import { isEmpty } from 'lodash';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
     CircleMarker,
     FeatureGroup,
@@ -21,19 +22,21 @@ import ModalChooseAction from './components/modal-choose-option';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 import useGeoLocation from './hooks/geo-location';
-import { listLocationUser } from './resources/data/list-positions.js';
 import { convertTime } from './helpers/convert-time';
+import { Col, Row } from 'antd';
+import ListPositionDraw from './components/list-position-draw';
+import SelectColor from './components/radio-select-color';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
-const ZOOM_LEVEL = 16;
+const ZOOM_LEVEL = 20;
 
 const DamageAssessment = () => {
     const userLocation = useGeoLocation();
     const { latitude, longitude, error } = usePosition();
 
     const [center, setCenter] = useState({ lat: 51.51, lng: -0.06 });
-    const [mapLayers, setMapLayers] = useState([]);
+    const [listPositionDraw, setListPositionDraw] = useState([]);
     const [count, setCount] = useState(0);
     const [inprogress, setInprogress] = useState(false);
     const [locationMoving, setLocationMoving] = useState([]);
@@ -43,6 +46,8 @@ const DamageAssessment = () => {
         time: moment('00:10', 'mm:ss'),
         action: false
     });
+    const [markerChecker, setMarkerChecker] = useState({});
+    const [colorDraw, setColorDraw] = useState('red');
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -59,7 +64,6 @@ const DamageAssessment = () => {
     useEffect(() => {
         const timeCheck =
             convertTime(moment(styleDraw.time).format('mm:ss')) * 1000;
-        console.log('timeCheck', timeCheck);
         if (typeof count === 'number' && inprogress && !styleDraw.action) {
             onTimeout.current = setTimeout(() => {
                 setCount(c => c + 10000);
@@ -78,24 +82,10 @@ const DamageAssessment = () => {
             console.log('longitude', longitude);
             console.log('count', count);
             if (!inprogress) return;
-            let newListMoving = [];
-
             let newLocation = {
                 lat: latitude,
                 lng: longitude
             };
-
-            // let indexLocation = count / 10000;
-            // console.log('indexLocation', indexLocation);
-            // if (count === 0) {
-            //     newListMoving.push(listLocationUser[count]);
-            // } else if (indexLocation >= listLocationUser.length) {
-            //     setInprogress(false);
-            //     return clearTimeout(onTimeout.current);
-            // } else {
-            //     newListMoving.push(listLocationUser[indexLocation]);
-            // }
-
             setLocationMoving([newLocation, ...locationMoving]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -110,13 +100,11 @@ const DamageAssessment = () => {
     }, [userLocation]);
 
     const handleCreate = e => {
-        console.log(e);
-
         const { layerType, layer } = e;
         if (layerType === 'polygon') {
             const { _leaflet_id } = layer;
-
-            setMapLayers(layers => [
+            console.log(layer.getLatLngs());
+            setListPositionDraw(layers => [
                 ...layers,
                 { id: _leaflet_id, latlngs: layer.getLatLngs()[0] }
             ]);
@@ -124,13 +112,12 @@ const DamageAssessment = () => {
     };
 
     const handleEdited = e => {
-        console.log(e);
         const {
             layers: { _layers }
         } = e;
 
         Object.values(_layers).map(({ _leaflet_id, editing }) =>
-            setMapLayers(layers =>
+            setListPositionDraw(layers =>
                 layers.map(l =>
                     l.id === _leaflet_id
                         ? { ...l, latlngs: { ...editing.latlngs[0] } }
@@ -141,13 +128,14 @@ const DamageAssessment = () => {
     };
 
     const handleDeleted = e => {
-        console.log(e);
         const {
             layers: { _layers }
         } = e;
 
         Object.values(_layers).map(({ _leaflet_id }) =>
-            setMapLayers(layers => layers.filter(l => l.id !== _leaflet_id))
+            setListPositionDraw(layers =>
+                layers.filter(l => l.id !== _leaflet_id)
+            )
         );
     };
 
@@ -178,10 +166,25 @@ const DamageAssessment = () => {
         setInprogress(true);
     };
 
-    console.log('locationMoving', locationMoving);
+    const handleSetMarkerChecker = useCallback(
+        value => {
+            setMarkerChecker(value);
+        },
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [markerChecker]
+    );
+
+    const handleUpdateListPosition = value => {
+        setListPositionDraw(value);
+    };
+
+    const handleUpdateColorDraw = e => {
+        console.log('e.target.value: ' + e.target.value);
+        setColorDraw(e.target.value);
+    };
 
     return (
-        <div>
+        <>
             <Map
                 center={{ lat: 51.51, lng: -0.06 }}
                 zoom={ZOOM_LEVEL}
@@ -190,6 +193,20 @@ const DamageAssessment = () => {
                 <Marker position={center} icon={icon}>
                     <Popup>You are here.</Popup>
                 </Marker>
+
+                {markerChecker && !isEmpty(markerChecker) && (
+                    <Marker position={markerChecker} icon={IconMarkerPin}>
+                        <Popup>
+                            You are here.
+                            <input
+                                type="file"
+                                id="myfile"
+                                name="myfile"
+                                onChange={e => console.log(e.target.value)}
+                            />
+                        </Popup>
+                    </Marker>
+                )}
                 <TileLayer
                     url="https://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
                     maxZoom={20}
@@ -215,14 +232,16 @@ const DamageAssessment = () => {
                             )
                     )}
 
-                {mapLayers &&
-                    mapLayers.length > 0 &&
-                    mapLayers.map(layer =>
+                {listPositionDraw &&
+                    listPositionDraw.length > 0 &&
+                    listPositionDraw.map(layer =>
                         layer.latlngs.map((location, index) => (
-                            <Marker
+                            <CircleMarker
                                 key={index}
-                                position={location}
-                                icon={IconMarkerPin}>
+                                center={location}
+                                fill={true}
+                                color="#ff0000"
+                                radius={3}>
                                 <Popup>
                                     You are here.
                                     <input
@@ -234,7 +253,7 @@ const DamageAssessment = () => {
                                         }
                                     />
                                 </Popup>
-                            </Marker>
+                            </CircleMarker>
                         ))
                     )}
                 <PrintControl
@@ -257,22 +276,66 @@ const DamageAssessment = () => {
                         onEdited={handleEdited}
                         onDeleted={handleDeleted}
                         draw={{
-                            rectangle: true,
-                            polyline: true,
-                            circle: false,
-                            circlemarker: false,
-                            marker: false
+                            polyline: {
+                                shapeOptions: { color: colorDraw },
+                                allowIntersection: false,
+                                showLength: true,
+                                metric: false,
+                                feet: false
+                            },
+                            polygon: {
+                                allowIntersection: false,
+                                shapeOptions: { color: colorDraw },
+                                edit: false,
+                                showLength: true,
+                                metric: false,
+                                feet: false,
+                                showArea: true
+                            },
+                            rectangle: {
+                                shapeOptions: { color: colorDraw },
+                                showLength: true,
+                                metric: false,
+                                feet: false,
+                                showArea: true
+                            },
+                            circle: {
+                                shapeOptions: { color: colorDraw },
+                                showLength: true,
+                                metric: false,
+                                feet: false,
+                                showArea: true
+                            },
+                            marker: {
+                                zIndexOffset: '999',
+                                edit: true,
+                                icon: icon
+                            }
                         }}
                     />
                 </FeatureGroup>
             </Map>
-            <ButtonControl
-                mapLayers={mapLayers}
-                onStopMoving={handleStopMoving}
-                onStartMoving={showModal}
-                onShow={showMyLocation}
-                isTouchCheck={styleDraw.action}
-            />
+            <Row>
+                <Col span={12}>
+                    <ListPositionDraw
+                        listPosition={listPositionDraw}
+                        onSetMarkerChecker={handleSetMarkerChecker}
+                        onUpdateListPosition={handleUpdateListPosition}
+                    />
+                </Col>
+                <Col span={12}>
+                    <ButtonControl
+                        onStopMoving={handleStopMoving}
+                        onStartMoving={showModal}
+                        onShow={showMyLocation}
+                        isTouchCheck={styleDraw.action}
+                    />
+                    <SelectColor
+                        onChangeColorDraw={handleUpdateColorDraw}
+                        colorSelect={colorDraw}
+                    />
+                </Col>
+            </Row>
 
             <ModalChooseAction
                 isModalVisible={isModalVisible}
@@ -280,7 +343,7 @@ const DamageAssessment = () => {
                 iniStyle={styleDraw}
                 onChangeStyle={handleChangeStyle}
             />
-        </div>
+        </>
     );
 };
 
