@@ -1,8 +1,8 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { Button, Col, Collapse, List, Row, Space, Typography } from 'antd';
 import { DeleteOutlined } from '@ant-design/icons';
-import { filter, find, map } from 'lodash';
+import { Button, Col, Collapse, List, Row, Typography } from 'antd';
+import { filter, map } from 'lodash';
+import PropTypes from 'prop-types';
+import React from 'react';
 
 const { Panel } = Collapse;
 

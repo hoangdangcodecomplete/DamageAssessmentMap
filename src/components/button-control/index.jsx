@@ -6,7 +6,8 @@ const ButtonControl = ({
     onStopMoving,
     onStartMoving,
     isTouchCheck,
-    onShow
+    onShow,
+    onTouchCheckPoint
 }) => {
     return (
         <Row gutter={[8, 8]}>
@@ -15,7 +16,7 @@ const ButtonControl = ({
                     <Button
                         type="primary"
                         shape="round"
-                        onClick={onStartMoving}>
+                        onClick={onTouchCheckPoint}>
                         Check
                     </Button>
                 </Col>
@@ -49,7 +50,8 @@ ButtonControl.propTypes = {
     onStopMoving: PropTypes.func,
     onStartMoving: PropTypes.func,
     onShow: PropTypes.func,
-    isTouchCheck: PropTypes.bool
+    isTouchCheck: PropTypes.bool,
+    onTouchCheckPoint: PropTypes.func
 };
 
 export default ButtonControl;

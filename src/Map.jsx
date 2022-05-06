@@ -1,6 +1,7 @@
-import moment from 'moment';
+import { Col, Row } from 'antd';
 import { isEmpty } from 'lodash';
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import moment from 'moment';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     CircleMarker,
     FeatureGroup,
@@ -18,14 +19,13 @@ import { EditControl } from 'react-leaflet-draw';
 import PrintControlDefault from 'react-leaflet-easyprint';
 import { usePosition } from 'use-position';
 import ButtonControl from './components/button-control';
+import ListPositionDraw from './components/list-position-draw';
 import ModalChooseAction from './components/modal-choose-option';
+import SelectColor from './components/radio-select-color';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
-import useGeoLocation from './hooks/geo-location';
 import { convertTime } from './helpers/convert-time';
-import { Col, Row } from 'antd';
-import ListPositionDraw from './components/list-position-draw';
-import SelectColor from './components/radio-select-color';
+import useGeoLocation from './hooks/geo-location';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -157,12 +157,16 @@ const DamageAssessment = () => {
 
     const handleStopMoving = () => {
         alert('Stop moving!');
+        if (styleDraw.action) {
+            return setStyleDraw({ ...styleDraw, action: false });
+        }
         clearTimeout(onTimeout.current);
     };
 
     const handleChangeStyle = values => {
         setStyleDraw(values);
         setIsModalVisible(false);
+        if (values.action) return;
         setInprogress(true);
     };
 
@@ -183,6 +187,16 @@ const DamageAssessment = () => {
         setColorDraw(e.target.value);
     };
 
+    const handelTouchCheckPoint = () => {
+        if (styleDraw.action && latitude && longitude && !error) {
+            let newLocation = {
+                lat: latitude,
+                lng: longitude
+            };
+            return setLocationMoving([newLocation, ...locationMoving]);
+        }
+    };
+    console.log('locationMoving', locationMoving);
     return (
         <>
             <Map
@@ -329,6 +343,7 @@ const DamageAssessment = () => {
                         onStartMoving={showModal}
                         onShow={showMyLocation}
                         isTouchCheck={styleDraw.action}
+                        onTouchCheckPoint={handelTouchCheckPoint}
                     />
                     <SelectColor
                         onChangeColorDraw={handleUpdateColorDraw}
