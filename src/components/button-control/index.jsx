@@ -1,6 +1,6 @@
-import React from 'react';
+import { Button, Col } from 'antd';
 import PropTypes from 'prop-types';
-import { Button, Col, Row } from 'antd';
+import React from 'react';
 
 const ButtonControl = ({
     onStopMoving,
@@ -10,7 +10,7 @@ const ButtonControl = ({
     onTouchCheckPoint
 }) => {
     return (
-        <Row gutter={[8, 8]}>
+        <>
             {isTouchCheck && (
                 <Col>
                     <Button
@@ -40,7 +40,7 @@ const ButtonControl = ({
                     Get my location
                 </Button>
             </Col>
-        </Row>
+        </>
         //     </Col>
         // </>
     );

@@ -53,7 +53,7 @@ const ListPositionDraw = ({
                                                 {JSON.stringify(item)}
                                             </Typography.Text>
                                         </Col>
-                                        <Col>
+                                        {/* <Col>
                                             <Button
                                                 type="primary"
                                                 icon={
@@ -68,7 +68,7 @@ const ListPositionDraw = ({
                                                 }
                                                 size="small"
                                             />
-                                        </Col>
+                                        </Col> */}
                                     </Row>
                                 </List.Item>
                             )}
