@@ -256,7 +256,7 @@ const DamageAssessment = () => {
                     </Control>
                 )}
                 <Control position="bottomright">
-                    <Row className="control-action ">
+                    <Row className="control-action">
                         <Col>
                             <ButtonControl
                                 onStopMoving={handleStopMoving}

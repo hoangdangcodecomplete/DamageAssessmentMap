@@ -76,4 +76,9 @@ body {
         width: 180px;
         display: block;
     }
+
+    .list-positions .ant-collapse-header {
+        padding: 4px !important;
+    }
+
 }
