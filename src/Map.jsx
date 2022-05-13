@@ -1,5 +1,5 @@
-import { Button, Col, Row } from 'antd';
-import { isEmpty } from 'lodash';
+import { Button, Col, Row, Input } from 'antd';
+import { isEmpty, pick } from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
@@ -33,7 +33,7 @@ import { MessageOutlined } from '@ant-design/icons';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
-const ZOOM_LEVEL = 20;
+const ZOOM_LEVEL = 17;
 
 const DamageAssessment = () => {
     const userLocation = useGeoLocation();
@@ -116,6 +116,10 @@ const DamageAssessment = () => {
         });
     }, [userLocation]);
 
+    const handleConvertListEdit = data => {
+        return data.map(value => pick(value, ['lat', 'lng']));
+    };
+
     const handleCreate = e => {
         const { layerType, layer } = e;
         const { _leaflet_id } = layer;
@@ -140,13 +144,35 @@ const DamageAssessment = () => {
         const {
             layers: { _layers }
         } = e;
-        Object.values(_layers).map(({ _leaflet_id, editing }) =>
+        Object.values(_layers).map(({ _leaflet_id, editing }) => {
+            console.log(editing);
             setListPositionDraw(layers =>
                 layers.map(l =>
                     l.id === _leaflet_id
-                        ? { ...l, latlngs: editing.latlngs[0][0] }
+                        ? {
+                              ...l,
+                              latlngs: handleConvertListEdit(
+                                  editing.latlngs[0][0]
+                              )
+                          }
                         : l
                 )
+            );
+        });
+    };
+
+    const handleEditVertex = e => {
+        const { poly } = e;
+        setListPositionDraw(layers =>
+            layers.map(l =>
+                l.id === poly._leaflet_id
+                    ? {
+                          ...l,
+                          latlngs: handleConvertListEdit(
+                              poly.editing.latlngs[0][0]
+                          )
+                      }
+                    : l
             )
         );
     };
@@ -220,10 +246,11 @@ const DamageAssessment = () => {
             return setLocationMoving([newLocation, ...locationMoving]);
         }
     };
+
     return (
         <>
             <Map
-                center={{ lat: 16.0703727, lng: 108.2405662 }}
+                center={{ lat: 51.51, lng: -0.06 }}
                 zoom={ZOOM_LEVEL}
                 ref={mapRef}
                 style={{
@@ -235,6 +262,25 @@ const DamageAssessment = () => {
                 <Marker position={center} icon={icon}>
                     <Popup>You are here.</Popup>
                 </Marker>
+                {listPositionDraw &&
+                    listPositionDraw.length > 0 &&
+                    listPositionDraw.map(positionDraw =>
+                        positionDraw.latlngs.map(position => (
+                            <Marker position={position} icon={icon}>
+                                <Popup>
+                                    <Input placeholder="Basic usage" />
+                                    <input
+                                        type="file"
+                                        id="myfile"
+                                        name="myfile"
+                                        onChange={e =>
+                                            console.log(e.target.value)
+                                        }
+                                    />
+                                </Popup>
+                            </Marker>
+                        ))
+                    )}
                 {markerChecker && !isEmpty(markerChecker) && (
                     <Marker position={markerChecker} icon={IconMarkerPin}>
                         <Popup>
@@ -320,6 +366,7 @@ const DamageAssessment = () => {
                         onCreated={handleCreate}
                         onEdited={handleEdited}
                         onDeleted={handleDeleted}
+                        onEditVertex={handleEditVertex}
                         draw={{
                             polyline: {
                                 shapeOptions: { color: colorDraw },

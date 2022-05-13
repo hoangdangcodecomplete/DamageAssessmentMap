@@ -64,38 +64,26 @@ body {
 
 .list-positions {
     padding: unset;
+
+    .ant-list-items {
+        height: 200px;
+        overflow: auto;
+    }
 }
 
-.list-positions .ant-list-items {
-    height: 200px;
-    overflow: auto;
-}
 
 @media screen and (max-width: 425px) and (min-width: 320px) {
     .list-positions {
         width: 180px;
         display: block;
+
+        .ant-collapse-header {
+            padding: 4px !important;
+        }
     }
 
-    .list-positions .ant-collapse-header {
-        padding: 4px !important;
-    }
-
 }
 
-body {
-    font-family: Arial, sans-serif;
-    background: url(http://www.shukatsu-note.com/wp-content/uploads/2014/12/computer-564136_1280.jpg) no-repeat;
-    background-size: cover;
-    height: 100vh;
-}
-
-h1 {
-    text-align: center;
-    font-family: Tahoma, Arial, sans-serif;
-    color: #06D85F;
-    margin: 80px 0;
-}
 
 .box {
     width: 40%;
@@ -148,32 +136,33 @@ h1 {
     width: 30%;
     position: relative;
     transition: all 5s ease-in-out;
-}
 
-.popup h2 {
-    margin-top: 0;
-    color: #333;
-    font-family: Tahoma, Arial, sans-serif;
-}
+    h2 {
+        margin-top: 0;
+        color: #333;
+        font-family: Tahoma, Arial, sans-serif;
+    }
 
-.popup .close {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-    transition: all 200ms;
-    font-size: 30px;
-    font-weight: bold;
-    text-decoration: none;
-    color: #333;
-}
+    .content {
+        max-height: 30%;
+        overflow: auto;
+    }
 
-.popup .close:hover {
-    color: #06D85F;
-}
+    .close {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        transition: all 200ms;
+        font-size: 30px;
+        font-weight: bold;
+        text-decoration: none;
+        color: #333;
+    }
 
-.popup .content {
-    max-height: 30%;
-    overflow: auto;
+    .close:hover {
+        color: #06D85F;
+    }
+
 }
 
 .icon-note {

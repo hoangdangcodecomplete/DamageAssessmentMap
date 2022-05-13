@@ -1,5 +1,5 @@
 import React from 'react';
-import './styles.css';
+import './styles.scss';
 import DamageAssessment from './Map';
 
 export default () => <DamageAssessment />;
