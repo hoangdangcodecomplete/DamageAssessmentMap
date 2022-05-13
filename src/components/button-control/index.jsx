@@ -41,8 +41,6 @@ const ButtonControl = ({
                 </Button>
             </Col>
         </>
-        //     </Col>
-        // </>
     );
 };
 

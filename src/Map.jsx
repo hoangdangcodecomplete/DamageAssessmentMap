@@ -1,4 +1,4 @@
-import { Col, Row } from 'antd';
+import { Button, Col, Row } from 'antd';
 import { isEmpty } from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -23,11 +23,13 @@ import ButtonControl from './components/button-control';
 import ListPositionDraw from './components/list-position-draw';
 import ModalChooseAction from './components/modal-choose-option';
 import SelectColor from './components/radio-select-color';
+import MyMarkers from './components/show-marker';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
 import useGeoCountry from './hooks/get-country';
+import { MessageOutlined } from '@ant-design/icons';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -51,6 +53,8 @@ const DamageAssessment = () => {
     });
     const [markerChecker, setMarkerChecker] = useState({});
     const [colorDraw, setColorDraw] = useState('red');
+    const [map, setMap] = useState(null);
+    const [isCheckMarker, setIsCheckMaker] = useState(false);
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -97,6 +101,8 @@ const DamageAssessment = () => {
                 lat: latitude,
                 lng: longitude
             };
+
+            console.log([newLocation, ...locationMoving]);
             setLocationMoving([newLocation, ...locationMoving]);
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -164,6 +170,7 @@ const DamageAssessment = () => {
                 ZOOM_LEVEL,
                 { animate: true }
             );
+            console.log(userLocation);
             setCenter({
                 lat: userLocation.coordinates.lat,
                 lng: userLocation.coordinates.lng
@@ -216,12 +223,15 @@ const DamageAssessment = () => {
     return (
         <>
             <Map
-                center={{ lat: 51.51, lng: -0.06 }}
+                center={{ lat: 16.0703727, lng: 108.2405662 }}
                 zoom={ZOOM_LEVEL}
                 ref={mapRef}
                 style={{
                     height: '100vh'
-                }}>
+                }}
+                fullscreenControl={true}
+                whenReady={e => setMap(e.target)}>
+                {/* {map && <MyMarkers isCheckMarker={isCheckMarker} map={map} />} */}
                 <Marker position={center} icon={icon}>
                     <Popup>You are here.</Popup>
                 </Marker>
@@ -255,6 +265,13 @@ const DamageAssessment = () => {
                         </Row>
                     </Control>
                 )}
+                <Control position="topright">
+                    <Button
+                        onClick={() => setIsCheckMaker(!isCheckMarker)}
+                        icon={<MessageOutlined />}
+                        className="icon-note"
+                    />
+                </Control>
                 <Control position="bottomright">
                     <Row className="control-action">
                         <Col>
@@ -290,15 +307,8 @@ const DamageAssessment = () => {
                                 </CircleMarker>
                             )
                     )}
-
-                {/* <PrintControl
-                    ref={printControl}
-                    position="topleft"
-                    sizeModes={['Current', 'A4Portrait', 'A4Landscape']}
-                    hideControlContainer={false}
-                /> */}
                 <PrintControl
-                    position="topright"
+                    position="topleft"
                     sizeModes={['Current', 'A4Portrait', 'A4Landscape']}
                     hideControlContainer={false}
                     title="Export as PNG"
@@ -330,25 +340,7 @@ const DamageAssessment = () => {
                             rectangle: false,
                             circle: false,
                             circlemarker: false,
-                            // rectangle: {
-                            //     shapeOptions: { color: colorDraw },
-                            //     showLength: true,
-                            //     metric: false,
-                            //     feet: false,
-                            //     showArea: false
-                            // },
-                            // circle: {
-                            //     shapeOptions: { color: colorDraw },
-                            //     showLength: true,
-                            //     metric: false,
-                            //     feet: false,
-                            //     showArea: false
-                            // },
-                            marker: {
-                                zIndexOffset: '999',
-                                edit: true,
-                                icon: icon
-                            }
+                            marker: false
                         }}
                     />
                 </FeatureGroup>
