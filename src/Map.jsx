@@ -23,7 +23,7 @@ import ButtonControl from './components/button-control';
 import ListPositionDraw from './components/list-position-draw';
 import ModalChooseAction from './components/modal-choose-option';
 import SelectColor from './components/radio-select-color';
-import MyMarkers from './components/show-marker';
+// import MyMarkers from './components/show-marker';
 import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
@@ -257,7 +257,9 @@ const DamageAssessment = () => {
                     height: '100vh'
                 }}
                 fullscreenControl={true}
+                //whenReady the same with whenStart
                 whenReady={e => setMap(e.target)}>
+                {/* Ex for click to show marker on the map */}
                 {/* {map && <MyMarkers isCheckMarker={isCheckMarker} map={map} />} */}
                 <Marker position={center} icon={icon}>
                     <Popup>You are here.</Popup>

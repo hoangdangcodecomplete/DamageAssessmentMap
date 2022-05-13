@@ -42,6 +42,7 @@ const MyMarkers = ({ map, isCheckMarker }) => {
 
     console.log('isCheckMarker', isCheckMarker);
     const ShowMarkers = ({ mapContainer, legend, markers }) => {
+        if (!isCheckMarker) return <></>;
         return markers.map((marker, index) => {
             return (
                 <Marker

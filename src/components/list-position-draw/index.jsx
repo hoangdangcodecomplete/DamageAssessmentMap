@@ -1,34 +1,29 @@
-import { DeleteOutlined } from '@ant-design/icons';
-import { Button, Col, Collapse, List, Row, Typography } from 'antd';
-import { filter, map } from 'lodash';
+import { Col, Collapse, List, Row, Typography } from 'antd';
 import PropTypes from 'prop-types';
 import React from 'react';
 
 const { Panel } = Collapse;
 
-const ListPositionDraw = ({
-    listPosition,
-    onSetMarkerChecker,
-    onUpdateListPosition
-}) => {
+const ListPositionDraw = ({ listPosition, onSetMarkerChecker }) => {
     if (!listPosition || listPosition.length <= 0) return <></>;
 
-    const handleDeletedPosition = (position, idLayer) => {
-        let newArray = [];
+    //method for delete position on list manager
+    // const handleDeletedPosition = (position, idLayer) => {
+    //     let newArray = [];
 
-        map(listPosition, function (location) {
-            if (location.id === idLayer) {
-                location = {
-                    ...location,
-                    latlngs: filter(location.latlngs, function (o) {
-                        return o.lat !== position.lat;
-                    })
-                };
-            }
-            newArray.push(location);
-        });
-        onUpdateListPosition(newArray);
-    };
+    //     map(listPosition, function (location) {
+    //         if (location.id === idLayer) {
+    //             location = {
+    //                 ...location,
+    //                 latlngs: filter(location.latlngs, function (o) {
+    //                     return o.lat !== position.lat;
+    //                 })
+    //             };
+    //         }
+    //         newArray.push(location);
+    //     });
+    //     onUpdateListPosition(newArray);
+    // };
 
     return (
         <>
