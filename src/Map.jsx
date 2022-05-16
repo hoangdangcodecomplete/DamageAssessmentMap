@@ -92,8 +92,8 @@ const DamageAssessment = () => {
     useEffect(() => {
         if (useCountry) {
             setCenter({
-                lat: useCountry.lat,
-                lng: useCountry.lon
+                lat: useCountry.latitude,
+                lng: useCountry.longitude
             });
         }
     }, [useCountry]);
@@ -254,7 +254,7 @@ const DamageAssessment = () => {
             return setLocationMoving([newLocation, ...locationMoving]);
         }
     };
-
+    console.log('useCountry', useCountry);
     return (
         <>
             <Map
