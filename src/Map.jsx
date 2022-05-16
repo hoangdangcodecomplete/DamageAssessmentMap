@@ -1,10 +1,10 @@
-import { Button, Col, Row, Input } from 'antd';
+import { MessageOutlined } from '@ant-design/icons';
+import { Button, Col, Input, Row } from 'antd';
 import { isEmpty, pick } from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
     CircleMarker,
-    FeatureGroup,
     Map,
     Marker,
     Polyline,
@@ -16,10 +16,11 @@ import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
 import Control from 'react-leaflet-control';
-import { EditControl } from 'react-leaflet-draw';
 import PrintControlDefault from 'react-leaflet-easyprint';
+import 'react-leaflet-fullscreen/dist/styles.css';
 import { usePosition } from 'use-position';
 import ButtonControl from './components/button-control';
+import FeatureGroupControl from './components/feature-group-control';
 import ListPositionDraw from './components/list-position-draw';
 import ModalChooseAction from './components/modal-choose-option';
 import SelectColor from './components/radio-select-color';
@@ -29,7 +30,8 @@ import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
 import useGeoCountry from './hooks/get-country';
-import { MessageOutlined } from '@ant-design/icons';
+import { FullscreenControl } from 'react-leaflet-fullscreen';
+import 'react-leaflet-fullscreen/dist/styles.css';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -233,9 +235,6 @@ const DamageAssessment = () => {
         }
     };
 
-    console.log('useCountry', useCountry);
-    console.log('userLocation', userLocation);
-
     return (
         <>
             <Map
@@ -358,37 +357,13 @@ const DamageAssessment = () => {
                     title="Export as PNG"
                     exportOnly
                 />
-                <FeatureGroup>
-                    <EditControl
-                        position="topright"
-                        onCreated={handleCreate}
-                        onEdited={handleEdited}
-                        onDeleted={handleDeleted}
-                        onEditVertex={handleEditVertex}
-                        draw={{
-                            polyline: {
-                                shapeOptions: { color: colorDraw },
-                                allowIntersection: false,
-                                showLength: true,
-                                metric: false,
-                                feet: false
-                            },
-                            polygon: {
-                                allowIntersection: false,
-                                shapeOptions: { color: colorDraw },
-                                edit: false,
-                                showLength: true,
-                                metric: false,
-                                feet: false,
-                                showArea: true
-                            },
-                            rectangle: false,
-                            circle: false,
-                            circlemarker: false,
-                            marker: false
-                        }}
-                    />
-                </FeatureGroup>
+                <FeatureGroupControl
+                    onCreate={handleCreate}
+                    onEdited={handleEdited}
+                    onDeleted={handleDeleted}
+                    onEditVertex={handleEditVertex}
+                    colorDraw={colorDraw}
+                />
             </Map>
 
             <ModalChooseAction

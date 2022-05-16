@@ -23,10 +23,12 @@
         "react-leaflet-draw": "0.19.0",
         "react-leaflet-drift-marker": "^3.0.0",
         "react-leaflet-easyprint": "^2.0.0",
+        "react-leaflet-fullscreen": "^2.0.0",
         "react-scripts": "^3.4.1",
         "sass": "^1.51.0",
         "style-loader": "^3.3.1",
         "use-position": "^1.0.0",
+        "uuid": "^8.3.2",
         "yarn": "^1.22.18"
     },
     "devDependencies": {
