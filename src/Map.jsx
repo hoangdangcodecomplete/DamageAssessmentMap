@@ -31,7 +31,7 @@ import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
 import useGeoCountry from './hooks/get-country';
-import { FullscreenControl } from 'react-leaflet-fullscreen';
+// import { FullscreenControl } from 'react-leaflet-fullscreen';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
