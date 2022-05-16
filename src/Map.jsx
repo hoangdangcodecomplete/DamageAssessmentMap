@@ -1,5 +1,5 @@
 import { MessageOutlined } from '@ant-design/icons';
-import { Button, Col, Input, Row } from 'antd';
+import { Button, Col, Input, Row, Upload } from 'antd';
 import { isEmpty, pick } from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -15,6 +15,7 @@ import {
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
+import 'react-leaflet-fullscreen/dist/styles.css';
 import Control from 'react-leaflet-control';
 import PrintControlDefault from 'react-leaflet-easyprint';
 import 'react-leaflet-fullscreen/dist/styles.css';
@@ -56,6 +57,26 @@ const DamageAssessment = () => {
     const [colorDraw, setColorDraw] = useState('red');
     const [map, setMap] = useState(null);
     const [isCheckMarker, setIsCheckMaker] = useState(false);
+    const [fileList, setFileList] = useState([]);
+
+    const onChange = ({ fileList: newFileList }) => {
+        setFileList(newFileList);
+    };
+
+    const onPreview = async file => {
+        let src = file.url;
+        if (!src) {
+            src = await new Promise(resolve => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file.originFileObj);
+                reader.onload = () => resolve(reader.result);
+            });
+        }
+        const image = new Image();
+        image.src = src;
+        const imgWindow = window.open(src);
+        imgWindow.document.write(image.outerHTML);
+    };
 
     const showModal = () => {
         setIsModalVisible(true);
@@ -265,14 +286,14 @@ const DamageAssessment = () => {
                             <Marker position={position} icon={icon}>
                                 <Popup>
                                     <Input placeholder="Basic usage" />
-                                    <input
-                                        type="file"
-                                        id="myfile"
-                                        name="myfile"
-                                        onChange={e =>
-                                            console.log(e.target.value)
-                                        }
-                                    />
+                                    <Upload
+                                        action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
+                                        listType="picture-card"
+                                        fileList={fileList}
+                                        onChange={onChange}
+                                        onPreview={onPreview}>
+                                        {fileList.length < 5 && '+ Upload'}
+                                    </Upload>
                                 </Popup>
                             </Marker>
                         ))
