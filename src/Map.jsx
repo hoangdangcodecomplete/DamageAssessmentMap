@@ -33,14 +33,14 @@ import { MessageOutlined } from '@ant-design/icons';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
-const ZOOM_LEVEL = 17;
+const ZOOM_LEVEL = 12;
 
 const DamageAssessment = () => {
     const userLocation = useGeoLocation();
     const useCountry = useGeoCountry();
     const { latitude, longitude, error } = usePosition();
 
-    const [center, setCenter] = useState({ lat: 51.51, lng: -0.06 });
+    const [center, setCenter] = useState();
     const [listPositionDraw, setListPositionDraw] = useState([]);
     const [count, setCount] = useState(0);
     const [inprogress, setInprogress] = useState(false);
@@ -107,14 +107,6 @@ const DamageAssessment = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [count, inprogress]);
-
-    useEffect(() => {
-        if (userLocation.loaded && userLocation.error) return;
-        setCenter({
-            lat: userLocation.coordinates.lat,
-            lng: userLocation.coordinates.lng
-        });
-    }, [userLocation]);
 
     const handleConvertListEdit = data => {
         return data.map(value => pick(value, ['lat', 'lng']));
@@ -191,15 +183,9 @@ const DamageAssessment = () => {
 
     const showMyLocation = () => {
         if (userLocation.loaded && !userLocation.error) {
-            mapRef.current.leafletElement.flyTo(
-                [userLocation.coordinates.lat, userLocation.coordinates.lng],
-                ZOOM_LEVEL,
-                { animate: true }
-            );
-            console.log(userLocation);
-            setCenter({
-                lat: userLocation.coordinates.lat,
-                lng: userLocation.coordinates.lng
+            const { lat, lng } = userLocation.coordinates;
+            mapRef.current.leafletElement.flyTo([lat, lng], 20, {
+                animate: true
             });
         } else {
             alert(userLocation.error.message);
@@ -247,10 +233,13 @@ const DamageAssessment = () => {
         }
     };
 
+    console.log('useCountry', useCountry);
+    console.log('userLocation', userLocation);
+
     return (
         <>
             <Map
-                center={{ lat: 51.51, lng: -0.06 }}
+                center={center}
                 zoom={ZOOM_LEVEL}
                 ref={mapRef}
                 style={{
@@ -261,9 +250,16 @@ const DamageAssessment = () => {
                 whenReady={e => setMap(e.target)}>
                 {/* Ex for click to show marker on the map */}
                 {/* {map && <MyMarkers isCheckMarker={isCheckMarker} map={map} />} */}
-                <Marker position={center} icon={icon}>
-                    <Popup>You are here.</Popup>
-                </Marker>
+                {userLocation.loaded && !userLocation.error && (
+                    <Marker
+                        position={[
+                            userLocation.coordinates.lat,
+                            userLocation.coordinates.lng
+                        ]}
+                        icon={icon}>
+                        <Popup>You are here.</Popup>
+                    </Marker>
+                )}
                 {listPositionDraw &&
                     listPositionDraw.length > 0 &&
                     listPositionDraw.map(positionDraw =>
