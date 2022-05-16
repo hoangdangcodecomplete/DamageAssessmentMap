@@ -31,7 +31,6 @@ import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
 import useGeoCountry from './hooks/get-country';
 import { FullscreenControl } from 'react-leaflet-fullscreen';
-import 'react-leaflet-fullscreen/dist/styles.css';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
