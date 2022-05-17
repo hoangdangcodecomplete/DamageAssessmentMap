@@ -31,7 +31,7 @@ import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
 import useGeoCountry from './hooks/get-country';
-// import { FullscreenControl } from 'react-leaflet-fullscreen';
+import { FullscreenControl } from 'react-leaflet-fullscreen';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -285,7 +285,7 @@ const DamageAssessment = () => {
                         positionDraw.latlngs.map(position => (
                             <Marker position={position} icon={icon}>
                                 <Popup>
-                                    <Input placeholder="Basic usage" />
+                                    <Input placeholder="Input text" />
                                     <Upload
                                         action="https://www.mocky.io/v2/5cc8019d300000980a055e76"
                                         listType="picture-card"
