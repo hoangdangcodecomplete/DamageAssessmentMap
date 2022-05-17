@@ -30,6 +30,7 @@ import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
+import FullscreenControl from 'react-leaflet-fullscreen';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -40,22 +41,22 @@ const DamageAssessment = () => {
     const { latitude, longitude, error } = usePosition();
 
     const [center, setCenter] = useState();
-    const [listPositionDraw, setListPositionDraw] = useState([]);
     const [count, setCount] = useState(0);
-    const [inprogress, setInprogress] = useState(false);
-    const [locationMoving, setLocationMoving] = useState([]);
-    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [colorDraw, setColorDraw] = useState('red');
+    const [map, setMap] = useState(null);
     const [styleDraw, setStyleDraw] = useState({
         color: '#ff0000',
         time: moment('00:10', 'mm:ss'),
         action: false
     });
     const [markerChecker, setMarkerChecker] = useState({});
-    const [colorDraw, setColorDraw] = useState('red');
-    const [map, setMap] = useState(null);
+    const [fileList, setFileList] = useState([]);
+    const [locationMoving, setLocationMoving] = useState([]);
+    const [listPositionDraw, setListPositionDraw] = useState([]);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [inprogress, setInprogress] = useState(false);
     const [isCheckMarker, setIsCheckMaker] = useState(false);
     const [isShowCurrent, setIsShowCurrent] = useState(false);
-    const [fileList, setFileList] = useState([]);
 
     const onChange = ({ fileList: newFileList }) => {
         setFileList(newFileList);
