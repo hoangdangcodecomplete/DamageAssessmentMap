@@ -1,5 +1,6 @@
 import { MessageOutlined } from '@ant-design/icons';
 import { Button, Col, Input, Row, Upload } from 'antd';
+
 import { isEmpty, pick } from 'lodash';
 import moment from 'moment';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -12,12 +13,11 @@ import {
     TileLayer,
     withLeaflet
 } from 'react-leaflet';
+import Control from 'react-leaflet-control';
+import PrintControlDefault from 'react-leaflet-easyprint';
 import 'leaflet-draw';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
-import 'react-leaflet-fullscreen/dist/styles.css';
-import Control from 'react-leaflet-control';
-import PrintControlDefault from 'react-leaflet-easyprint';
 import 'react-leaflet-fullscreen/dist/styles.css';
 import { usePosition } from 'use-position';
 import ButtonControl from './components/button-control';
@@ -30,8 +30,6 @@ import icon from './constants/IconMarker';
 import IconMarkerPin from './constants/IconMarkerPin';
 import { convertTime } from './helpers/convert-time';
 import useGeoLocation from './hooks/geo-location';
-import useGeoCountry from './hooks/get-country';
-import { FullscreenControl } from 'react-leaflet-fullscreen';
 
 const PrintControl = withLeaflet(PrintControlDefault);
 
@@ -39,7 +37,6 @@ const ZOOM_LEVEL = 12;
 
 const DamageAssessment = () => {
     const userLocation = useGeoLocation();
-    const useCountry = useGeoCountry();
     const { latitude, longitude, error } = usePosition();
 
     const [center, setCenter] = useState();
@@ -57,6 +54,7 @@ const DamageAssessment = () => {
     const [colorDraw, setColorDraw] = useState('red');
     const [map, setMap] = useState(null);
     const [isCheckMarker, setIsCheckMaker] = useState(false);
+    const [isShowCurrent, setIsShowCurrent] = useState(false);
     const [fileList, setFileList] = useState([]);
 
     const onChange = ({ fileList: newFileList }) => {
@@ -90,13 +88,13 @@ const DamageAssessment = () => {
     let onTimeout = useRef();
 
     useEffect(() => {
-        if (useCountry) {
+        if (userLocation) {
             setCenter({
-                lat: useCountry.lat,
-                lng: useCountry.lng
+                lat: userLocation.coordinates.lat,
+                lng: userLocation.coordinates.lng
             });
         }
-    }, [useCountry]);
+    }, [userLocation]);
 
     useEffect(() => {
         const timeCheck =
@@ -209,6 +207,8 @@ const DamageAssessment = () => {
             mapRef.current.leafletElement.flyTo([lat, lng], 20, {
                 animate: true
             });
+
+            setIsShowCurrent(true);
         } else {
             alert(userLocation.error.message);
         }
@@ -254,7 +254,6 @@ const DamageAssessment = () => {
             return setLocationMoving([newLocation, ...locationMoving]);
         }
     };
-    console.log('useCountry', useCountry);
     return (
         <>
             <Map
@@ -269,7 +268,7 @@ const DamageAssessment = () => {
                 whenReady={e => setMap(e.target)}>
                 {/* Ex for click to show marker on the map */}
                 {/* {map && <MyMarkers isCheckMarker={isCheckMarker} map={map} />} */}
-                {userLocation.loaded && !userLocation.error && (
+                {userLocation.loaded && !userLocation.error && isShowCurrent && (
                     <Marker
                         position={[
                             userLocation.coordinates.lat,
