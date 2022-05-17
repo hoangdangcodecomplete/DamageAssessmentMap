@@ -92,8 +92,8 @@ const DamageAssessment = () => {
     useEffect(() => {
         if (useCountry) {
             setCenter({
-                lat: useCountry.latitude,
-                lng: useCountry.longitude
+                lat: useCountry.lat,
+                lng: useCountry.lng
             });
         }
     }, [useCountry]);
