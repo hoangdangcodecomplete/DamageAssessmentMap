@@ -328,13 +328,13 @@ const DamageAssessment = () => {
                         </Row>
                     </Control>
                 )}
-                <Control position="topright">
+                {/* <Control position="topright">
                     <Button
                         onClick={() => setIsCheckMaker(!isCheckMarker)}
                         icon={<MessageOutlined />}
                         className="icon-note"
                     />
-                </Control>
+                </Control> */}
                 <Control position="bottomright">
                     <Row className="control-action">
                         <Col>
