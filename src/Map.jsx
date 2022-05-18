@@ -1,5 +1,4 @@
-import { MessageOutlined } from '@ant-design/icons';
-import { Button, Col, Input, Row, Upload } from 'antd';
+import { Col, Input, Row, Upload } from 'antd';
 
 import { isEmpty, pick } from 'lodash';
 import moment from 'moment';
@@ -55,7 +54,6 @@ const DamageAssessment = () => {
     const [listPositionDraw, setListPositionDraw] = useState([]);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inprogress, setInprogress] = useState(false);
-    const [isCheckMarker, setIsCheckMaker] = useState(false);
     const [isShowCurrent, setIsShowCurrent] = useState(false);
 
     const onChange = ({ fileList: newFileList }) => {
@@ -157,8 +155,7 @@ const DamageAssessment = () => {
         const {
             layers: { _layers }
         } = e;
-        Object.values(_layers).map(({ _leaflet_id, editing }) => {
-            console.log(editing);
+        Object.values(_layers).map(({ _leaflet_id, editing }) =>
             setListPositionDraw(layers =>
                 layers.map(l =>
                     l.id === _leaflet_id
@@ -170,8 +167,8 @@ const DamageAssessment = () => {
                           }
                         : l
                 )
-            );
-        });
+            )
+        );
     };
 
     const handleEditVertex = e => {
